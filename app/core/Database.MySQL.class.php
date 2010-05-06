@@ -15,39 +15,39 @@
  * @package Core
  */
 Class MySQL Extends Database {
-	
-	/**
-	 * Конструктор: инициализация подключения к базе данных
-	 */
-	function __construct() {
-		$this->descriptor=mysql_pconnect($db_host,$db_login,$db_password) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
-		mysql_select_db($db_name,$this->descriptor);
-		$this->exec("SET NAMES 'UTF8'"); // TODO: реализовать метод exec
-		return 0;
-	}
-	
-	/**
-	 * Exec
-	 * 
-	 * Функция выполняет запрос без обработки результата
-	 * 
-	 * @param string $query SQL-запрос
-	 */
-	function exec($query) {
-		mysql_query($query,$this->descriptor);
-	}
-	
-	/**
-	 * Escape
-	 * 
-	 * Функция корректно экранирует текст
-	 * 
-	 * @param string $string Строка, которую необходимо экранировать
-	 * @return string Экранированная строка
-	 */
-	function escape($string) {
-		return mysql_real_escape_string(htmlspecialchars($string), $this->descriptor);
-	}
+    
+    /**
+     * Конструктор: инициализация подключения к базе данных
+     */
+    function __construct() {
+        $this->descriptor=mysql_pconnect($db_host,$db_login,$db_password) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
+        mysql_select_db($db_name,$this->descriptor);
+        $this->exec("SET NAMES 'UTF8'");
+        return 0;
+    }
+    
+    /**
+     * Exec
+     * 
+     * Функция выполняет запрос без обработки результата
+     * 
+     * @param string $query SQL-запрос
+     */
+    function exec($query) {
+        mysql_query($query,$this->descriptor);
+    }
+    
+    /**
+     * Escape
+     * 
+     * Функция корректно экранирует текст
+     * 
+     * @param string $string Строка, которую необходимо экранировать
+     * @return string Экранированная строка
+     */
+    function escape($string) {
+        return mysql_real_escape_string(htmlspecialchars($string), $this->descriptor);
+    }
 
 }
 
