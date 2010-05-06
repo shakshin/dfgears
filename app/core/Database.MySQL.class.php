@@ -13,8 +13,9 @@
  * @author Pavel Vyazovoi <vyazovoi@googlemail.com>
  * @version 0.1
  * @package Core
+ * @todo fetchRow, fetchCol
  */
-Class MySQL Extends Database {
+class MySQL extends Database {
     
     /**
      * Конструктор: инициализация подключения к базе данных
@@ -47,6 +48,32 @@ Class MySQL Extends Database {
      */
     function escape($string) {
         return mysql_real_escape_string(htmlspecialchars($string), $this->descriptor);
+    }
+
+    /**
+     * fetchAll
+     *
+     * Возвращает весь рекордсет
+     *
+     * @param string $query SQL-запрос
+     * @return array массив с результатом запроса
+     */    
+    function fetchAll($query) {
+        $result=mysql_unbuffered_query($query,$this->descriptor);
+        return @mysql_fetch_array($result);
+    }
+    
+    /**
+     * fetchRow
+     *
+     * Возвращает строку
+     *
+     * @param string $query SQL-запрос
+     * @return array одномерный массив с результатом запроса
+     */
+    function fetchRow($query) {
+        $result=mysql_unbuffered_query($query,$this->descriptor);
+        return @mysql_fetch_array($result);
     }
 
 }

@@ -14,9 +14,8 @@
  * @author Pavel Vyazovoi <vyazovoi@googlemail.com>
  * @version 0.1
  * @package Core
- * @abstract
  */
-Class Database {
+abstract class Database {
 	
 	public $db_host;
 	public $db_name;
@@ -27,6 +26,11 @@ Class Database {
 	 * Дескриптор подключения к БД
 	 */
 	protected $descriptor;
+	
+	abstract function fetchAll($query);
+	abstract function fetchRow($query);
+	abstract function fetchCol($query);
+	abstract function fetchOne($query);
 	
 }
 ?>
