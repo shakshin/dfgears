@@ -1,5 +1,5 @@
 <?php
-class DFModule {
+abstract class DFModule {
     protected $core;
 
     function DFModule($core) {
