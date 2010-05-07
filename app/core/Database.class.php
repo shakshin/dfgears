@@ -11,7 +11,6 @@
  * 4) fetchCol - возвращает столбец
  * 5) fetchOne - возвращает скалярное значение
  * 
- * @author Pavel Vyazovoi <vyazovoi@googlemail.com>
  * @version 0.1
  * @package Core
  */

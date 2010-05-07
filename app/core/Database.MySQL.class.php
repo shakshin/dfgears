@@ -10,7 +10,6 @@
  * 2) insert_id - mysql_insert_id
  * 3) insert_id_sql - см. выше только через SQL-запрос
  *
- * @author Pavel Vyazovoi <vyazovoi@googlemail.com>
  * @version 0.1
  * @package Core
  * @todo fetchRow, fetchCol
