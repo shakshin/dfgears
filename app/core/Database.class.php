@@ -25,10 +25,11 @@ abstract class Database {
 
 	function Database($core) {
         $this->core = $core;
-        $this->dbHost = $this->core->config->dbHost;
-        $this->dbName = $this->core->config->dbName;
-        $this->dbUser = $this->core->config->dbUser;
-        $this->dbPassword = $this->core->config->dbPassword;
+
+        $this->dbHost = $this->core->config->database->dbHost;
+        $this->dbName = $this->core->config->database->dbName;
+        $this->dbUser = $this->core->config->database->dbUser;
+        $this->dbPassword = $this->core->config->database->dbPassword;
     }
 
 	/**
@@ -40,6 +41,6 @@ abstract class Database {
 	abstract function fetchRow($query);
 	abstract function fetchCol($query);
 	abstract function fetchOne($query);
-
+	abstract function fetchObject($query);
 }
 ?>

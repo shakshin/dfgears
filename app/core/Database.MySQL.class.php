@@ -15,12 +15,17 @@
  */
 class MySQL extends Database {
 
+   	public $dbHost;
+	public $dbName;
+	public $dbUser;
+	public $dbPassword;
+
     /**
-     * Конструктор: инициализация подключения к базе данных
+     * Подключение к базе данных
      */
     function connect() {
-        $this->descriptor=mysql_pconnect($dbHost,$this->core->config->database->dbUser,$this->core->config->database->dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
-        mysql_select_db($this->core->config->database->dbName,$this->descriptor);
+        $this->descriptor=mysql_pconnect($this->dbHost,$this->dbUser,$this->dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
+        mysql_select_db($this->dbName,$this->descriptor);
         $this->exec("SET NAMES 'UTF8'");
         return 0;
     }
@@ -51,14 +56,24 @@ class MySQL extends Database {
     /**
      * fetchAll
      *
-     * Возвращает весь рекордсет
+     * Возвращает весь рекордсет в виде ассоциативного массива,
+     * ключом которого является порядковый номер элемента,
+     * а элементом - вложенный ассоциативный массив с данными
      *
      * @param string $query SQL-запрос
      * @return array массив с результатом запроса
      */
     function fetchAll($query) {
-        $result=mysql_unbuffered_query($query,$this->descriptor);
-        return @mysql_fetch_array($result);
+        $result=array();
+		//счетчик
+		$num=1;
+        $row_set=mysql_query($query,$this->descriptor);
+        while($line=mysql_fetch_assoc($row_set))
+		{
+			$result[$num]=$line;
+			$num++;
+		}
+        return $result;
     }
 
     /**
@@ -67,23 +82,53 @@ class MySQL extends Database {
      * Возвращает строку
      *
      * @param string $query SQL-запрос
-     * @return array одномерный массив с результатом запроса
+     * @return array ассоциативный массив с результатом запроса
      */
     function fetchRow($query) {
-        $result=mysql_unbuffered_query($query,$this->descriptor);
-        return @mysql_fetch_array($result);
+        $result=mysql_query($query,$this->descriptor);
+        return @mysql_fetch_assoc($result);
     }
 
-    // TODO: реализовать
+    /**
+     * fetchCol
+     *
+     * Возвращает столбец
+     *
+     * @param string $query SQL-запрос
+     * @return array массив с результатом запроса
+     * TODO: реализовать
+     */
     function fetchCol($query) {
+        $result=mysql_query($query,$this->descriptor);
         return 1;
     }
 
-    // TODO: реализовать
+    /**
+     * fetchOne
+     *
+     * Возвращает скалярное значение
+     *
+     * @param string $query SQL-запрос
+     * @return string результат запроса
+     * TODO: реализовать
+     */
     function fetchOne($query) {
+        $result=mysql_query($query,$this->descriptor);
         return 1;
     }
+
+    /**
+     * fetchObject
+     *
+     * Возвращает объект
+     *
+     * @param string $query SQL-запрос
+     * @return object результат запроса в виде объекта
+     */
+     function fetchObject($query) {
+        $result=mysql_query($query,$this->descriptor);
+        return @mysql_fetch_object($result); //FIXME: доделать
+     }
 
 }
-
 ?>
