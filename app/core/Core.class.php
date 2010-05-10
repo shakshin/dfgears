@@ -29,15 +29,16 @@ class DFCore {
         // Подключение прототипа модулей
         require_once "Module.class.php";
         require_once "Templater.class.php";
-   
+
         $this->configure();
 
-        // TODO: инициировать адаптер к БД
-
+        // Инициализация адаптера БД
+        require_once "Database.class.php";
+        require_once "Database.".$this->config->database->system.".class.php";
 
         //отладка
         return $this->moduleAction("Test", "");
-        
+
     }
 
     public function setAjax() {
