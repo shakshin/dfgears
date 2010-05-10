@@ -6,6 +6,8 @@ class DFCore {
     public $database;
     public $config;
     public $request;
+    public $pageTitle= "dfGears page";
+    public $content = "";
 
     private $hooks = array();
     private $isAjax = false;
@@ -29,17 +31,45 @@ class DFCore {
         // Подключение прототипа модулей
         require_once "Module.class.php";
         require_once "Templater.class.php";
+        require_once "Database.class.php";
+        require_once "Context.class.php";
 
         $this->configure();
 
         // Инициализация адаптера БД
-        require_once "Database.class.php";
+        
         require_once "Database.".$this->config->database->system.".class.php";
         $this->db = new $this->config->database->system($this);
 
-        //отладка
-        return $this->moduleAction("Test", "");
+        // чтение параметров
+        // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
+        $ctx = new DFContext();
+        $ctx = $this->hookTouch("before_prarams_load", $ctx);
+        
+        foreach ($_GET as $key => $value) {
+            $this->request->parameters[$key] = $value;
+        }
+        foreach ($_POST as $key => $value) {
+            $this->request->parameters[$key] = $value;
+        }
+        $ctx = new DFContext();
+        $ctx->vars["parameters"] = $this->request->parameters;
+        $ctx = $this->hookTouch("after_prarams_load", $ctx);
+        $this->request->parameters = $ctx->vars["parameters"];
 
+        // TODO: интерпретация ЧПУ
+
+
+        // TODO: подключения модуля и генерация контента
+
+        if (!$this->isAjax) {
+            $tpl = new DFTemplater();
+            $tpl->assign("pageTitle", $this->pageTitle);
+            $tpl->assign("content", $this->content);
+            return $tpl->fetch("main");
+        } else {
+            return $this->content;
+        }
     }
 
     public function setAjax() {
@@ -58,18 +88,28 @@ class DFCore {
     }
 
 
-// TODO: дописать механизм хуков
-/*    public function hookSubscribe($alias, $handler) {
+    // Механизм хуков
+    public function hookSubscribe($alias, $handler) {
         $this->hooks[$alias][] = $handler;
     }
 
     public function hookTouch($alias, $context) {
+        if (!isset($this->hooks[$alias])) { return $context; }
+        $newContext = $context;
         foreach ($this->hooks[$alias] as $handler) {
-            $context = $handler($this, $context);
+            $newContext = $handler($this, $newContext);
+            if ($newContext->abort) {
+                return $context;
+                break;
+            }
+            if ($newContext->break) {
+                return $newContext;
+                break;
+            }
         }
-        return $context;
+        return $newContext;
     }
-*/
+
     public function moduleAction($module, $action) {
         require_once $module . ".module.php";
         $moduleInstance = new $module($this);
