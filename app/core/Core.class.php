@@ -35,7 +35,7 @@ class DFCore {
         // Инициализация адаптера БД
         require_once "Database.class.php";
         require_once "Database.".$this->config->database->system.".class.php";
-        $this->db = new $this->config->database->system();
+        $this->db = new $this->config->database->system($this);
 
         //отладка
         return $this->moduleAction("Test", "");
