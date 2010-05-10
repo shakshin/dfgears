@@ -75,12 +75,12 @@ class MySQL extends Database {
     }
 
     // TODO: реализовать
-    function fetchCol() {
+    function fetchCol($query) {
         return 1;
     }
 
     // TODO: реализовать
-    function fetchOne() {
+    function fetchOne($query) {
         return 1;
     }
 
