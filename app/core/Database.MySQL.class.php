@@ -19,8 +19,8 @@ class MySQL extends Database {
      * Конструктор: инициализация подключения к базе данных
      */
     function connect() {
-        $this->descriptor=mysql_pconnect($dbHost,$this->core->config->database->dbUser,$this->core->config->database->dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
-        mysql_select_db($this->core->config->database->dbName,$this->descriptor);
+        $this->descriptor=mysql_pconnect($dbHost,$dbUser,$dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
+        mysql_select_db($dbName,$this->descriptor);
         $this->exec("SET NAMES 'UTF8'");
         return 0;
     }
@@ -74,12 +74,28 @@ class MySQL extends Database {
         return @mysql_fetch_array($result);
     }
 
-    // TODO: реализовать
+    /**
+     * fetchCol
+     *
+     * Возвращает столбец
+     *
+     * @param string $query SQL-запрос
+     * @return array массив с результатом запроса
+     * @todo Реализовать
+     */
     function fetchCol($query) {
         return 1;
     }
 
-    // TODO: реализовать
+    /**
+     * fetchOne
+     *
+     * Возвращает скалярное значение
+     *
+     * @param string $query SQL-запрос
+     * @return string результат запроса
+     * @todo Реализовать
+     */
     function fetchOne($query) {
         return 1;
     }
