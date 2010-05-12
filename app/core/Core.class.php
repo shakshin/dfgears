@@ -39,7 +39,8 @@ class DFCore {
         // Инициализация адаптера БД
         
         require_once "Database.".$this->config->database->system.".class.php";
-        $this->db = new $this->config->database->system($this);
+        $this->database = new $this->config->database->system($this);
+        $this->database->connect();
 
         // чтение параметров
         // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
@@ -60,7 +61,16 @@ class DFCore {
         // TODO: интерпретация ЧПУ
 
 
-        // TODO: подключения модуля и генерация контента
+        // подключения модуля и генерация контента
+        if (isset($this->request->parameters["alias"])) {
+            $alias = $this->database->escape($this->request->parameters["alias"]);
+        } else {
+            $alias = $this->database->escape($this->config->deaultObject);
+        }
+        $req = $this->database->fetchRow("select objectClesses.module, objects.id from objectClasses, objects where (objects.class = objectClesses.id) and (object.alias = '$alias')");
+        $module = $req[0];
+        $id = $req[1];
+        $this->content = $this->moduleAction($id, $module, $this->request->parameters["action"]);
 
         if (!$this->isAjax) {
             $tpl = new DFTemplater();
@@ -110,9 +120,10 @@ class DFCore {
         return $newContext;
     }
 
-    public function moduleAction($module, $action) {
+    public function moduleAction($id, $module, $action) {
         require_once $module . ".module.php";
         $moduleInstance = new $module($this);
+        $moduleInstance.setId($id);
         return $moduleInstance->action($action);
     }
 }

@@ -1,9 +1,14 @@
 <?php
 abstract class DFModule {
     protected $core;
+    protected $id;
 
     function DFModule($core) {
         $this->core = $core;
+    }
+
+    function setId($id) {
+        $this->id = $id;
     }
 
     public function action($action) {
