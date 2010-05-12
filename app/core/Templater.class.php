@@ -26,10 +26,10 @@ class DFTemplater {
     }
 
     public function display($template) {
-        if (!file_exists($this->path . "/" . $prefix . $template . ".template.php")) {
+        if (!file_exists($this->path . "/" . $this->prefix . $template . ".template.php")) {
             throw new Exception("Template not found");
         }
-        include $this->path . "/" . $prefix . $template . ".template.php";
+        include $this->path . "/" . $this->prefix . $template . ".template.php";
     }
 
     public function subTemplate() {
