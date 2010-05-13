@@ -7,7 +7,7 @@ abstract class DFModule {
         $this->core = $core;
     }
 
-    function setId($id) {
+    public function setId($id) {
         $this->id = $id;
     }
 

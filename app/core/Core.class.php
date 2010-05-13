@@ -65,11 +65,12 @@ class DFCore {
         if (isset($this->request->parameters["alias"])) {
             $alias = $this->database->escape($this->request->parameters["alias"]);
         } else {
-            $alias = $this->database->escape($this->config->deaultObject);
+            $alias = $this->database->escape($this->config->defaultObject);
         }
-        $req = $this->database->fetchRow("select objectClasses.module, objects.id from objectClasses, objects where (objects.class = objectClasses.id) and (object.alias = '$alias')");
-        $module = $req[0];
-        $id = $req[1];
+        
+        $req = $this->database->fetchRow("select objectClasses.module, objects.id from objectClasses, objects where (objects.class = objectClasses.id) and (objects.alias = '$alias')");
+        $module = $req["module"];
+        $id = $req["id"];
         $this->content = $this->moduleAction($id, $module, $this->request->parameters["action"]);
 
         if (!$this->isAjax) {
@@ -132,7 +133,7 @@ class DFCore {
         }
         require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
-        $moduleInstance.setId($id);
+        $moduleInstance->setId($id);
         return $moduleInstance->action($action);
     }
 }

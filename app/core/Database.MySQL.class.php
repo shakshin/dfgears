@@ -86,7 +86,7 @@ class MySQL extends Database {
      */
     function fetchRow($query) {
         $result=mysql_query($query,$this->descriptor);
-        return @mysql_fetch_assoc($result);
+        return mysql_fetch_assoc($result);
     }
 
     /**
