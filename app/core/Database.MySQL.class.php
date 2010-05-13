@@ -100,7 +100,12 @@ class MySQL extends Database {
      */
     function fetchCol($query) {
         $result=mysql_query($query,$this->descriptor);
-        return 1;
+        $resultCol = array();
+        while ($line = mysql_fetch_array($result)) {
+            $resultCol[] = $line[0];
+        }
+
+        return $resultCol;
     }
 
     /**
@@ -114,7 +119,8 @@ class MySQL extends Database {
      */
     function fetchOne($query) {
         $result=mysql_query($query,$this->descriptor);
-        return 1;
+        $resultRow =  mysql_fetch_array($result);
+        return $resultOne[0];
     }
 
     /**
