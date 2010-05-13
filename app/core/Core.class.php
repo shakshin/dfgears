@@ -35,6 +35,7 @@ class DFCore {
         require_once "Context.class.php";
 
         $this->configure();
+        $this->pageTitle = $this->config->defaultTitle;
 
         // Инициализация адаптера БД
         
