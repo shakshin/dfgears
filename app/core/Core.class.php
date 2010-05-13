@@ -67,7 +67,7 @@ class DFCore {
         } else {
             $alias = $this->database->escape($this->config->deaultObject);
         }
-        $req = $this->database->fetchRow("select objectClesses.module, objects.id from objectClasses, objects where (objects.class = objectClesses.id) and (object.alias = '$alias')");
+        $req = $this->database->fetchRow("select objectClasses.module, objects.id from objectClasses, objects where (objects.class = objectClasses.id) and (object.alias = '$alias')");
         $module = $req[0];
         $id = $req[1];
         $this->content = $this->moduleAction($id, $module, $this->request->parameters["action"]);
