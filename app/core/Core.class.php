@@ -121,7 +121,16 @@ class DFCore {
     }
 
     public function moduleAction($id, $module, $action) {
-        require_once $module . ".module.php";
+        if (empty($id)) {
+            throw new Exception("No object defined");
+        }
+        if (empty($module)) {
+            throw new Exception("No module defined");
+        }
+        if (!file_exists("app/modules/" . $module . ".module.php")) {
+            throw new Exception("Module not found: {$module}");
+        }
+        require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
         $moduleInstance.setId($id);
         return $moduleInstance->action($action);

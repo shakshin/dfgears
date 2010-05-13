@@ -26,8 +26,11 @@ class DFTemplater {
     }
 
     public function display($template) {
+        if (empty($template)) {
+            throw new Exception("No template to process");
+        }
         if (!file_exists($this->path . "/" . $this->prefix . $template . ".template.php")) {
-            throw new Exception("Template not found");
+            throw new Exception("Template not found: {$this->prefix}{$template}");
         }
         include $this->path . "/" . $this->prefix . $template . ".template.php";
     }
