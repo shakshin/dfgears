@@ -15,6 +15,7 @@ class DFCore {
     private $mail;
 
     public function run() {
+        session_start();
         // Добавление своих путей с инклюдами
         $this->addIncludePath("app/core");
         $this->addIncludePath("app/modules");
@@ -83,7 +84,15 @@ class DFCore {
             }
         } else {
             $this->request->parsed = array();
-        }    
+        }
+        $i = 0;
+        while (isset($this->request->parsed[$i])) {
+            if (isset($this->request->parsed[$i+1])) {
+                $this->request->parameters[$this->request->parsed[$i]] = $this->request->parsed[$i+1];
+            }
+            $i = $i+2;
+        }
+
 
         // подключения модуля и генерация контента
         if (isset($this->request->parameters["alias"])) {

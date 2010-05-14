@@ -64,6 +64,7 @@ class MySQL extends Database {
      * @return array массив с результатом запроса
      */
     function fetchAll($query) {
+        //echo $query;
         $result=array();
 		//счетчик
 		$num=1;
