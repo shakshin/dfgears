@@ -59,8 +59,23 @@ class DFCore {
         $ctx = $this->hookTouch("after_prarams_load", $ctx);
         $this->request->parameters = $ctx->vars["parameters"];
 
-        // TODO: интерпретация ЧПУ
-
+        // ЧПУ
+        $uri = $_SERVER["REQUEST_URI"];
+        $uri = preg_replace("/^\//", "", $uri);
+        $uri = preg_replace("/\.html$/", "", $uri);
+        $parsed = explode("/", $uri);
+        if (!empty($parsed[0])) {
+            $this->request->parameters["alias"] = $parsed[0];
+            if (!empty($parsed[1])) {
+                $this->request->parameters["action"] = $parsed[1];
+                $this->request->parsed = array_slice($parsed, 2);
+            } else {
+                $this->request->parsed = array_slice($parsed, 1);
+            }
+        } else {
+            $this->request->parsed = array();
+        }
+        
 
         // подключения модуля и генерация контента
         if (isset($this->request->parameters["alias"])) {
