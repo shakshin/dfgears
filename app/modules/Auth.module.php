@@ -47,6 +47,8 @@ class Auth extends DFModule {
 
     public function register() {
         $message = "";
+        $lcheck = $this->core->database->fetchOne("select id from users where login='{$this->core->database->escape($this->core->request->parameters["login"])}'");
+        $ncheck = $this->core->database->fetchOne("select id from users where fullName='{$this->core->database->escape($this->core->request->parameters["fullName"])}'");
         if (empty($this->core->request->parameters["reg"])) {
             $message = "Заполните анкету регистрации пользователя";
         } else
@@ -73,7 +75,14 @@ class Auth extends DFModule {
         } else
         if (!preg_match("/^[a-zA-Z0-9]+[a-zA-Z0-9\.\-=]$/", $this->core->request->parameters["fullName"])) {
             $message = "Введенный ник неверен. Проверьте или введите другой";
+        } else
+        if (!empty($lcheck)) {
+            $message = "Введенное имя пользователя уже занято. Введите другое";
+        } else
+        if (!empty($ncheck)) {
+            $message = "Введенный ник уже занят. Введите другой";
         }
+
 
         if (empty($message)) {
             $login = $this->core->database->escape($this->core->request->parameters["login"]);
@@ -106,6 +115,11 @@ class Auth extends DFModule {
             if (empty($uid)) {
                 header("Location: /");
             } else {
+                $role = $this->core->database->fetchOne("select id from roles where (alias='user')");
+                if (!empty($role)) {
+                    $this->core->database->exec("insert into acl (userId, roleId) values ({$uid}, {$role})");
+                }
+
                 $this->core->database->exec("update users set active=1, code='' where (id={$uid})");
                 return "<p class='b-centered'>Ваша учетная запись активирована!<br>Теперь вы можете <a href='/user/logon'>войти</a> на сайт.</p>";
             }
