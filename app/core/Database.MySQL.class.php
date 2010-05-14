@@ -120,7 +120,7 @@ class MySQL extends Database {
     function fetchOne($query) {
         $result=mysql_query($query,$this->descriptor);
         $resultRow =  mysql_fetch_array($result);
-        return $resultOne[0];
+        return $resultRow[0];
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php
-
-
-
 class DFCore {
+
+    public $auth;
+    public $aliases;
     public $database;
     public $config;
     public $request;
@@ -11,6 +11,8 @@ class DFCore {
 
     private $hooks = array();
     private $isAjax = false;
+
+    private $mail;
 
     public function run() {
         // Добавление своих путей с инклюдами
@@ -33,15 +35,21 @@ class DFCore {
         require_once "Templater.class.php";
         require_once "Database.class.php";
         require_once "Context.class.php";
+        require_once "Auth.class.php";
+        require_once "Mail.class.php";
 
         $this->configure();
         $this->pageTitle = $this->config->defaultTitle;
 
+        
         // Инициализация адаптера БД
         
         require_once "Database.".$this->config->database->system.".class.php";
         $this->database = new $this->config->database->system($this);
         $this->database->connect();
+
+        // Подключение системы авторизации
+        $this->auth = new DFAuth($this);
 
         // чтение параметров
         // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
@@ -62,6 +70,7 @@ class DFCore {
         // ЧПУ
         $uri = $_SERVER["REQUEST_URI"];
         $uri = preg_replace("/^\//", "", $uri);
+        $uri = preg_replace("/\?.*$/", "", $uri);
         $uri = preg_replace("/\.html$/", "", $uri);
         $parsed = explode("/", $uri);
         if (!empty($parsed[0])) {
@@ -74,20 +83,16 @@ class DFCore {
             }
         } else {
             $this->request->parsed = array();
-        }
-        
+        }    
 
         // подключения модуля и генерация контента
         if (isset($this->request->parameters["alias"])) {
-            $alias = $this->database->escape($this->request->parameters["alias"]);
+            $alias = $this->request->parameters["alias"];
         } else {
-            $alias = $this->database->escape($this->config->defaultObject);
+            $alias = $this->config->defaultObject;
         }
         
-        $req = $this->database->fetchRow("select objectClasses.module, objects.id from objectClasses, objects where (objects.class = objectClasses.id) and (objects.alias = '$alias')");
-        $module = $req["module"];
-        $id = $req["id"];
-        $this->content = $this->moduleAction($id, $module, $this->request->parameters["action"]);
+        $this->content = $this->moduleAction($this->aliases[$alias], $this->request->parameters["action"]);
 
         if (!$this->isAjax) {
             $tpl = new DFTemplater();
@@ -108,9 +113,8 @@ class DFCore {
     }
 
     private function configure() {
-
-// TODO: сделать автоподгрузку всех конфигов из папки config или догрузку по запросу модуля
         include_once "Config.php";
+        include_once "Config.route.php";
         $this->config = $cfg;
     }
 
@@ -137,10 +141,7 @@ class DFCore {
         return $newContext;
     }
 
-    public function moduleAction($id, $module, $action) {
-        if (empty($id)) {
-            throw new Exception("No object defined");
-        }
+    public function moduleAction($module, $action) {
         if (empty($module)) {
             throw new Exception("No module defined");
         }
@@ -149,8 +150,16 @@ class DFCore {
         }
         require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
-        $moduleInstance->setId($id);
         return $moduleInstance->action($action);
+    }
+
+    public function sendMail($to, $subj, $message) {      
+        $m = new Mail();
+        $m->From($this->config->mailFrom);
+        $m->To($to);
+        $m->Subject($subj);
+        $m->Body($message, "UTF-8");
+        $m->Send();
     }
 }
 
