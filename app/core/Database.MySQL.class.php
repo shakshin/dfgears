@@ -119,6 +119,7 @@ class MySQL extends Database {
      * TODO: реализовать
      */
     function fetchOne($query) {
+        //echo $query;
         $result=mysql_query($query,$this->descriptor);
         $resultRow =  mysql_fetch_array($result);
         return $resultRow[0];

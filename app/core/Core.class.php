@@ -74,6 +74,7 @@ class DFCore {
         $uri = preg_replace("/\?.*$/", "", $uri);
         $uri = preg_replace("/\.html$/", "", $uri);
         $parsed = explode("/", $uri);
+        
         if (!empty($parsed[0])) {
             $this->request->parameters["alias"] = $parsed[0];
             if (!empty($parsed[1])) {
@@ -85,6 +86,7 @@ class DFCore {
         } else {
             $this->request->parsed = array();
         }
+        
         $i = 0;
         while (isset($this->request->parsed[$i])) {
             if (isset($this->request->parsed[$i+1])) {
@@ -106,6 +108,7 @@ class DFCore {
         if (!$this->isAjax) {
             $tpl = new DFTemplater();
             $tpl->assign("pageTitle", $this->pageTitle);
+            $tpl->assign("userName", $_SESSION["userName"]);
             $tpl->assign("content", $this->content);
             return $tpl->fetch("main");
         } else {
@@ -152,14 +155,19 @@ class DFCore {
 
     public function moduleAction($module, $action) {
         if (empty($module)) {
-            throw new Exception("No module defined");
+            $this->setAjax();
+            header("HTTP/1.0 404 Not Found");
+            return;
         }
         if (!file_exists("app/modules/" . $module . ".module.php")) {
-            throw new Exception("Module not found: {$module}");
+            $this->setAjax();
+            header("HTTP/1.0 404 Not Found");
+            return;
         }
         require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
         return $moduleInstance->action($action);
+
     }
 
     public function sendMail($to, $subj, $message) {      

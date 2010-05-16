@@ -11,7 +11,9 @@ abstract class DFModule {
         if (method_exists($this, $action)) {
             return $this->$action();
         } else {
-            throw new Exception("Method not found: {$action}");
+            $this->core->setAjax();
+            header("HTTP/1.0 404 Not Found");
+            return;
         }
     }
 }
