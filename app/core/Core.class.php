@@ -55,7 +55,7 @@ class DFCore {
         // чтение параметров
         // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
         $ctx = new DFContext();
-        $ctx = $this->hookTouch("before_prarams_load", $ctx);
+        $ctx = $this->hookTouch("before_params_load", $ctx);
         
         foreach ($_GET as $key => $value) {
             $this->request->parameters[$key] = $value;
