@@ -54,6 +54,28 @@ class MySQL extends Database {
     }
 
     /**
+     * Insert_Id
+     *
+     * Функция вставляет id последней вставленной записи
+     *
+     * @return int Id записи
+     */
+     function insert_id() {
+         return mysql_insert_id($this->descriptor);
+     }
+
+     /**
+      * Insert_Id_sql
+      *
+      * Функция вставляет id последней вставленной записи (SQL-версия)
+      *
+      * @return int Id записи
+      */
+      function insert_id_sql() {
+          return $this->fetchOne("SELECT LAST_INSERT_ID()");
+      }
+
+    /**
      * fetchAll
      *
      * Возвращает весь рекордсет в виде ассоциативного массива,
