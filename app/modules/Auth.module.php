@@ -86,7 +86,7 @@ class Auth extends DFModule {
 
         if (empty($message)) {
             $login = $this->core->database->escape($this->core->request->parameters["login"]);
-            $password = md5($this->core->request->parameters["login"]);
+            $password = md5($this->core->request->parameters["password"]);
             $fullName = $this->core->database->escape($this->core->request->parameters["fullName"]);
             $email = $this->core->database->escape($this->core->request->parameters["email"]);
             $code = md5($login.$password.date("d-m-Y:H-i-s"));

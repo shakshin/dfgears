@@ -32,6 +32,7 @@ class DFTemplater {
         if (!file_exists($this->path . "/" . $this->prefix . $template . ".template.php")) {
             throw new Exception("Template not found: {$this->prefix}{$template}");
         }
+        extract($this->vars);
         include $this->path . "/" . $this->prefix . $template . ".template.php";
     }
 
