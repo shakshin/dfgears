@@ -21,23 +21,24 @@ abstract class Database {
 	public $dbUser;
 	public $dbPassword;
 
-	protected $core;
+	protected $config;
 
-	function Database($core) {
-        $this->core = $core;
+	function Database($config) {
+            $this->config = $config;
 
-        $this->dbHost = $this->core->config->database->dbHost;
-        $this->dbName = $this->core->config->database->dbName;
-        $this->dbUser = $this->core->config->database->dbUser;
-        $this->dbPassword = $this->core->config->database->dbPassword;
-    }
+            $this->dbHost = $this->config->dbHost;
+            $this->dbName = $this->config->dbName;
+            $this->dbUser = $this->config->dbUser;
+            $this->dbPassword = $this->config->dbPassword;
+
+        }
 
 	/**
 	 * Дескриптор подключения к БД
 	 */
 	protected $descriptor;
 
-    abstract function fetchAll($query);
+        abstract function fetchAll($query);
 	abstract function fetchRow($query);
 	abstract function fetchCol($query);
 	abstract function fetchOne($query);

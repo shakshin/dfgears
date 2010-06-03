@@ -1,35 +1,76 @@
 <?php
+/**
+ *
+ * DFCore
+ *
+ * Класс ядра DFGears.
+ * Предоставляет публичные методы:
+ * 1) run()             - запуск ядра
+ * 2) setAjax()         - выставить флаг AJAX
+ * 3) addIncludePath()  - добавить путь для подключения внешних модулей
+ * 4) hookSubscribe()   - подбавить обработчик для точки перехвата
+ * 5) hookTouch()       - активизировать точку перехвата
+ * 6) sendMail()        - отправить сообщение по почте
+ *
+ */
 class DFCore {
-
+    /**
+     *
+     * Объект, отвечающий за авторизацию пользователей в системе
+     *
+     */
     public $auth;
+
+    /**
+     *
+     * Список соответствия алиасов и модлуей их обрабатывающих
+     *
+     */
     public $aliases;
+
+    /**
+     *
+     * Объект для доступа к БД
+     *
+     */
     public $database;
+
+    /**
+     *
+     * Структура конфигурации ядра
+     *
+     */
     public $config;
+
+    /**
+     *
+     * Параметры запроса
+     *
+     */
     public $request;
+
+    /**
+     *
+     * Заголовок страницы
+     *
+     */
     public $pageTitle= "dfGears page";
+
+    /**
+     *
+     * Контент страницы
+     *
+     */
     public $content = "";
 
     private $hooks = array();
     private $isAjax = false;
 
-    private $mail;
-
-    public function run() {
-        session_start();
+    private function init() {
         // Добавление своих путей с инклюдами
         $this->addIncludePath("app/core");
         $this->addIncludePath("app/modules");
         $this->addIncludePath("app/config");
-
-        // Подключение gears
-        if ($gearsDir = opendir("app/modules/gears")) {
-            while (false != ($gear = readdir($gearsDir))) {
-                if ((preg_match("/^[^_].+\.php$/", $gear) > 0) && (!is_dir("modules/gears" . $gear))) {
-                    include_once "app/modules/gears/" . $gear;
-                }
-            }
-            closedir($gearsDir);
-        }
 
         // Подключение прототипа модулей
         require_once "Module.class.php";
@@ -38,25 +79,20 @@ class DFCore {
         require_once "Context.class.php";
         require_once "Auth.class.php";
         require_once "Mail.class.php";
+    }
 
-        $this->configure();
-        $this->pageTitle = $this->config->defaultTitle;
-
-        
-        // Инициализация адаптера БД
-        
+    private function dbInit() {
         require_once "Database.".$this->config->database->system.".class.php";
-        $this->database = new $this->config->database->system($this);
+        $this->database = new $this->config->database->system($this->config->database);
         $this->database->connect();
+    }
 
-        // Подключение системы авторизации
-        $this->auth = new DFAuth($this);
-
+    private function parse() {
         // чтение параметров
         // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
         $ctx = new DFContext();
         $ctx = $this->hookTouch("before_params_load", $ctx);
-        
+
         foreach ($_GET as $key => $value) {
             $this->request->parameters[$key] = $value;
         }
@@ -74,7 +110,13 @@ class DFCore {
         $uri = preg_replace("/\?.*$/", "", $uri);
         $uri = preg_replace("/\.html$/", "", $uri);
         $parsed = explode("/", $uri);
-        
+
+        // Проверка на aякс-флаг
+        if (!empty($parsed[0]) && $parsed[0] == "ajax") {
+            $this->setAjax();
+            $parsed = array_slice($parsed, 1);
+        }
+
         if (!empty($parsed[0])) {
             $this->request->parameters["alias"] = $parsed[0];
             if (!empty($parsed[1])) {
@@ -86,7 +128,7 @@ class DFCore {
         } else {
             $this->request->parsed = array();
         }
-        
+
         $i = 0;
         while (isset($this->request->parsed[$i])) {
             if (isset($this->request->parsed[$i+1])) {
@@ -94,7 +136,33 @@ class DFCore {
             }
             $i = $i+2;
         }
+    }
 
+    public function run() {
+        session_start();
+        // Инициализация
+        $this->init();
+
+        // Подключение gears
+        if ($gearsDir = opendir("app/modules/gears")) {
+            while (false != ($gear = readdir($gearsDir))) {
+                if ((preg_match("/^[^_].+\.php$/", $gear) > 0) && (!is_dir("modules/gears" . $gear))) {
+                    include_once "app/modules/gears/" . $gear;
+                }
+            }
+            closedir($gearsDir);
+        }
+        // Конфигурирование
+        $this->configure();
+        $this->pageTitle = $this->config->defaultTitle;
+
+        // Инициализация адаптера БД       
+        $this->dbInit();
+
+        // Подключение системы авторизации
+        $this->auth = new DFAuth($this);
+
+        $this->parse();
 
         // подключения модуля и генерация контента
         if (isset($this->request->parameters["alias"])) {
@@ -153,16 +221,14 @@ class DFCore {
         return $newContext;
     }
 
-    public function moduleAction($module, $action) {
+    private function moduleAction($module, $action) {
         if (empty($module)) {
             $this->setAjax();
-            header("HTTP/1.0 404 Not Found");
-            return;
+            return "Произошла ошибка: undefined module ({$module})";
         }
         if (!file_exists("app/modules/" . $module . ".module.php")) {
             $this->setAjax();
-            header("HTTP/1.0 404 Not Found");
-            return;
+            return "Произошла ошибка: module not found ({$module})";
         }
         require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
@@ -170,6 +236,12 @@ class DFCore {
 
     }
 
+    /**
+     *
+     * @param string $to Адресат
+     * @param string $subj Тема
+     * @param string $message Тело письма
+     */
     public function sendMail($to, $subj, $message) {      
         $m = new Mail();
         $m->From($this->config->mailFrom);
