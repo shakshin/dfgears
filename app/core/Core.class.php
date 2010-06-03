@@ -14,6 +14,7 @@
  *
  */
 class DFCore {
+    public $version = "0.1a";
     /**
      *
      * Объект, отвечающий за авторизацию пользователей в системе
@@ -255,7 +256,7 @@ class DFCore {
 
     public function doError($message = "core error") {
         ob_end_clean();
-        include "error.php";
+        include "Error.php";
         exit();
     }
 }
