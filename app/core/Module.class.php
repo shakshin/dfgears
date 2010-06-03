@@ -11,9 +11,8 @@ abstract class DFModule {
         if (method_exists($this, $action)) {
             return $this->$action();
         } else {
-            $this->core->setAjax();
-            header("HTTP/1.0 404 Not Found");
-            return;
+            $className = get_class($this);
+            $this->core->doError("call to undefined module action.<br/>module: {$className}<br/>action: {$action}");
         }
     }
 }

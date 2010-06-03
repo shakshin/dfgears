@@ -24,10 +24,14 @@ class MySQL extends Database {
      * Подключение к базе данных
      */
     function connect() {
-        $this->descriptor=mysql_pconnect($this->dbHost,$this->dbUser,$this->dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
-        mysql_select_db($this->dbName,$this->descriptor);
-        $this->exec("SET NAMES 'UTF8'");
-        return 0;
+        
+        $this->descriptor=mysql_pconnect($this->dbHost,$this->dbUser,$this->dbPassword);
+        if ($this->descriptor) {
+            if (mysql_select_db($this->dbName,$this->descriptor)) {
+                $this->exec("SET NAMES 'UTF8'");
+                return true;
+            } else { return false;}
+        } else { return false; }
     }
 
     /**

@@ -27,12 +27,10 @@ class DFTemplater {
 
     public function display($template) {
         if (empty($template)) {
-            echo "Произошла ошибка: undefined template ({$template})";
-            return;
+            $this->core->doError("template undefined: {$this->prefix}{$template}");
         }
         if (!file_exists($this->path . "/" . $this->prefix . $template . ".template.php")) {
-            echo "Произошла ошибка: template not found ({$this->prefix}{$template})";
-            return;
+            $this->core->doError("template not found: {$this->prefix}{$template}");
         }
         extract($this->vars);
         include $this->path . "/" . $this->prefix . $template . ".template.php";

@@ -67,6 +67,7 @@ class DFCore {
     private $isAjax = false;
 
     private function init() {
+        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
         // Добавление своих путей с инклюдами
         $this->addIncludePath("app/core");
         $this->addIncludePath("app/modules");
@@ -84,7 +85,7 @@ class DFCore {
     private function dbInit() {
         require_once "Database.".$this->config->database->system.".class.php";
         $this->database = new $this->config->database->system($this->config->database);
-        $this->database->connect();
+        return $this->database->connect();
     }
 
     private function parse() {
@@ -157,7 +158,10 @@ class DFCore {
         $this->pageTitle = $this->config->defaultTitle;
 
         // Инициализация адаптера БД       
-        $this->dbInit();
+         if (!$this->dbInit()) {
+             $this->doError("database connection failed");
+             return;
+         }
 
         // Подключение системы авторизации
         $this->auth = new DFAuth($this);
@@ -223,12 +227,10 @@ class DFCore {
 
     private function moduleAction($module, $action) {
         if (empty($module)) {
-            $this->setAjax();
-            return "Произошла ошибка: undefined module ({$module})";
+            $this->doError("module undefined: {$module}");
         }
         if (!file_exists("app/modules/" . $module . ".module.php")) {
-            $this->setAjax();
-            return "Произошла ошибка: module not found ({$module})";
+            $this->doError("module not found: {$module}");
         }
         require_once "app/modules/" . $module . ".module.php";
         $moduleInstance = new $module($this);
@@ -249,6 +251,12 @@ class DFCore {
         $m->Subject($subj);
         $m->Body($message, "UTF-8");
         $m->Send();
+    }
+
+    public function doError($message = "core error") {
+        ob_end_clean();
+        include "error.php";
+        exit();
     }
 }
 
