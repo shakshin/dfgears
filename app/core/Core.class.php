@@ -170,6 +170,7 @@ class DFCore {
         $this->parse();
 
         // подключения модуля и генерация контента
+        $GLOBALS["dfcore"] = $this;
         if (isset($this->request->parameters["alias"])) {
             $alias = $this->request->parameters["alias"];
         } else {

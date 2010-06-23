@@ -1,8 +1,17 @@
 <?php
 class DFTemplater {
+    private $core;
     private $vars;
     private $path = "app/templates";
     private $prefix = "";
+  
+    function DFTemplater($core) {
+        if (isset($core)) {
+            $this->core = $core;
+        } else {
+            $this->core = $GLOBALS["dfcore"];
+        }
+    }
 
     public function assign($varName, $varValue) {
         $this->vars[$varName] = $varValue;
