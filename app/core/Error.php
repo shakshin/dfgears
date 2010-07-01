@@ -9,6 +9,6 @@
             <h1>Ошибка при генерации страницы:</h1>
             <p><?=$message ?></p>
             <hr/>
-            <address>dfgears engine v<?=$this->version ?> &copy; S.Shakshin and P.Vyazovoy; <a href="http://diffy.ru">different.ru</a></address>
+            <address>dfgears engine v<?=$this->version ?> &copy; <a href="http://diffy.ru">different.ru</a>; original code by Sergei Shakshin</address>
         </body>
 </html>

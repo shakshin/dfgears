@@ -126,6 +126,64 @@ class Auth extends DFModule {
 
         }
     }
+
+    public function profile() {
+        if (!$this->core->auth->check()) {
+            return $this->logon();
+
+        }
+        $message = "";
+
+
+        if (empty($this->core->request->parameters["reg"])) {
+            $message = "Заполните поля профиля";
+        } else
+        if (empty($this->core->request->parameters["password"])) {
+            $message = "Введите желаемый пароль";
+        } else
+        if ($this->core->request->parameters["password2"] != $this->core->request->parameters["password"]) {
+            $message = "Пароль и подтверждение не совпадают!";
+        } else
+        if (empty($this->core->request->parameters["fullName"])) {
+            $message = "Введите Ваш ник";
+        } else
+        if (empty($this->core->request->parameters["email"])) {
+            $message = "Введите Ваш e-mail";
+        } else
+        if (!check_email_address($this->core->request->parameters["email"])) {
+            $message = "Введенный email неверен. Проверьте или введите другой";
+        } else
+        if (!preg_match("/^[a-zA-Z0-9]+[a-zA-Z0-9\.\-=]$/", $this->core->request->parameters["fullName"])) {
+            $message = "Введенный ник неверен. Проверьте или введите другой";
+        }
+
+
+
+        if (empty($message)) {
+            $id = $_SESSION["userId"];
+            $login = $_SESSION["userName"];
+            $password = md5($this->core->request->parameters["password"]);
+            $fullName = $this->core->database->escape($this->core->request->parameters["fullName"]);
+            $email = $this->core->database->escape($this->core->request->parameters["email"]);
+            $icq = $this->core->database->escape($this->core->request->parameters["icq"]);
+
+            $this->core->database->exec("update users set `password` = '{$password}', fullName = '{$fullName}', icq= '{$icq}', email = '{$email}' where id = {$id}");
+
+            return "<p class='b-centered'>Ваша учетная запись успешно изменена.</p>";
+        } else {
+            $pr = $this->core->database->fetchRow("select * from users where id = {$_SESSION["userId"]}");
+
+            $tpl = new DFTemplater();
+            $tpl->assign("message", $message);
+            $tpl->assign("login", $_SESSION["userName"]);
+            $tpl->assign("id", $_SESSION["userId"]);
+            $tpl->assign("fullName", $pr["fullName"]);
+            $tpl->assign("email", $pr["email"]);
+            $tpl->assign("icq", $pr["icq"]);
+            $tpl->setPrefix("auth");
+            return $tpl->fetch("profile");
+        }
+    }
   
 }
 

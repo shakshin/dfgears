@@ -2,11 +2,18 @@
 abstract class DFModule {
     protected $core;
 
+    public $modName = "Untitled Module";
+
+    protected $roleRequired = null;
+
     function DFModule($core) {
         $this->core = $core;
     }
 
     public function action($action) {
+        if (($this->roleRequired != null) && (!$this->core->auth->checkRole($this->roleRequired))) {
+            $this->core->doError("У Вас нет доступа к этой странице<br/>You are not alowed to access this content", "HTTP/1.0 403 Forbidden");
+        }
         if (empty($action)) { $action = "main"; }
         if (method_exists($this, $action)) {
             return $this->$action();

@@ -64,6 +64,10 @@ class DFCore {
      */
     public $content = "";
 
+    private $template = "main";
+
+    private $tplVars = array();
+
     private $hooks = array();
     private $isAjax = false;
 
@@ -175,6 +179,7 @@ class DFCore {
             $alias = $this->request->parameters["alias"];
         } else {
             $alias = $this->config->defaultObject;
+            $this->request->parameters["alias"] = $this->config->defaultObject;
         }
         
         $this->content = $this->moduleAction($this->aliases[$alias], $this->request->parameters["action"]);
@@ -184,7 +189,10 @@ class DFCore {
             $tpl->assign("pageTitle", $this->pageTitle);
             $tpl->assign("userName", $_SESSION["userName"]);
             $tpl->assign("content", $this->content);
-            return $tpl->fetch("main");
+            foreach ($this->tplVars as $var => $value) {
+                $tpl->assign($var, $value);
+            }
+            return $tpl->fetch($this->template);
         } else {
             return $this->content;
         }
@@ -255,10 +263,15 @@ class DFCore {
         $m->Send();
     }
 
-    public function doError($message = "core error") {
+    public function doError($message = "core error", $response = "HTTP/1.0 500 Internal application error") {
         ob_end_clean();
+        header($response);
         include "Error.php";
         exit();
+    }
+
+    public function setMainTemplate($template) {
+        $this->template = $template;
     }
 }
 
