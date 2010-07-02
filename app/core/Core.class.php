@@ -85,6 +85,7 @@ class DFCore {
         require_once "Context.class.php";
         require_once "Auth.class.php";
         require_once "Mail.class.php";
+        require_once "Image.class.php";
     }
 
     private function dbInit() {

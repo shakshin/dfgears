@@ -1,4 +1,4 @@
-<?php
+    <?php
     class Admin extends DFModule {
         protected $roleRequired = "admin";
 

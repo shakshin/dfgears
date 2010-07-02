@@ -2,9 +2,11 @@
 class test extends DFModule {
 
     public function main() {
-        $tpl = new DFTemplater();
-        $tpl->assign("megatest", $this->core->config->database->system);
-        return $tpl->fetch("Test");
+        $image = new DFImage("/var/www/test.jpg");
+
+        $this->core->setAjax();
+        $image->thumbnail(100, 200);
+        $image->toClient();
     }
 }
 
