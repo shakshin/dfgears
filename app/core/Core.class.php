@@ -78,7 +78,17 @@ class DFCore {
         $this->addIncludePath("app/modules");
         $this->addIncludePath("app/config");
 
-        // Подключение прототипа модулей
+        // Подключение ядерных классов
+        if ($coreDir = opendir("app/core")) {
+            while (false != ($class = readdir($coreDir))) {
+                if ((preg_match("/^[^\.]+\.class\.php$/", $class) > 0) && (!is_dir("app/core/" . $class))) {
+                    require_once "app/core/" . $class;
+                }
+            }
+            closedir($coreDir);
+        }
+
+
         require_once "Module.class.php";
         require_once "Templater.class.php";
         require_once "Database.class.php";
