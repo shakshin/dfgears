@@ -2,11 +2,13 @@
 class test extends DFModule {
 
     public function main() {
-        $image = new DFImage("/var/www/test.jpg");
-
-        $this->core->setAjax();
-        $image->thumbnail(100, 200);
-        $image->toClient();
+        $link = new DFLink();
+        $link->external("http://test.bla");
+        $link->option("byRating");
+        $link->param("test", "бляяяя!!!???");
+        $link->classic();
+        $url = $link->render();
+        ?><a href="<?=$url ?>">test</a><?
     }
 }
 

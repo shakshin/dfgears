@@ -2,16 +2,21 @@
 class DFImage {
     private $image = null;
 
-    function DFImage($path) {
-        return  $this->load($path);
+    function DFImage($path, $realname = null) {
+        return  $this->load($path, $realname);
     }
 
-    public function load($path) {
+    public function load($path, $realname = null) {
         if (!file_exists($path)) {
             return false;
         }
-        $pinfo = pathinfo($path);
-        $ext = $pinfo["extension"];
+        if ($realname == null) {
+            $pinfo = pathinfo($path);
+            $ext = $pinfo["extension"];
+        } else {
+            $pinfo = pathinfo($realname);
+            $ext = $pinfo["extension"];
+        }
         switch (strtolower($ext)) {
             case "jpeg":
             case "jpg":

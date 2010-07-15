@@ -151,6 +151,7 @@ class DFCore {
         session_start();
         // Инициализация
         $this->init();
+        $GLOBALS["dfcore"] = $this;
 
         // Подключение gears
         if ($gearsDir = opendir("app/modules/gears")) {
@@ -177,7 +178,6 @@ class DFCore {
         $this->parse();
 
         // подключения модуля и генерация контента
-        $GLOBALS["dfcore"] = $this;
         if (isset($this->request->parameters["alias"])) {
             $alias = $this->request->parameters["alias"];
         } else {
@@ -217,10 +217,20 @@ class DFCore {
 
 
     // Механизм хуков
+    /**
+     *
+     * @param string $alias Алиас хука
+     * @param string $handler Функция-обработчик хука
+     */
     public function hookSubscribe($alias, $handler) {
         $this->hooks[$alias][] = $handler;
     }
 
+    /**
+     *
+     * @param string $alias Алиас хука
+     * @param string $context Контекст хука (набор переменных и объектов)
+     */
     public function hookTouch($alias, $context) {
         if (!isset($this->hooks[$alias])) { return $context; }
         $newContext = $context;
@@ -266,6 +276,11 @@ class DFCore {
         $m->Send();
     }
 
+    /**
+     *
+     * @param string $message Сообщение об ошибке
+     * @param string $response Заголовок ответа HTTP с кодом
+     */
     public function doError($message = "core error", $response = "HTTP/1.0 500 Internal application error") {
         ob_end_clean();
         header($response);
@@ -273,8 +288,21 @@ class DFCore {
         exit();
     }
 
+    /**
+     *
+     * @param string $template Имя шаблона
+     */
     public function setMainTemplate($template) {
         $this->template = $template;
+    }
+
+    /**
+     *
+     * @param string $name Имя переменной
+     * @param string $value Значение переменной
+     */
+    public function setTemplateVar($name, $value) {
+        $this->tplVars[$name] = $value;
     }
 }
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * MySQL
  *
@@ -24,14 +24,10 @@ class MySQL extends Database {
      * Подключение к базе данных
      */
     function connect() {
-        
-        $this->descriptor=mysql_pconnect($this->dbHost,$this->dbUser,$this->dbPassword);
-        if ($this->descriptor) {
-            if (mysql_select_db($this->dbName,$this->descriptor)) {
-                $this->exec("SET NAMES 'UTF8'");
-                return true;
-            } else { return false;}
-        } else { return false; }
+        $this->descriptor=mysql_pconnect($this->dbHost,$this->dbUser,$this->dbPassword) or die(mysql_error()); // FIXME: заменить or die на вменяемый обработчик экзепшенов
+        mysql_select_db($this->dbName,$this->descriptor);
+        $this->exec("SET NAMES 'UTF8'");
+        return 0;
     }
 
     /**
@@ -42,6 +38,7 @@ class MySQL extends Database {
      * @param string $query SQL-запрос
      */
     function exec($query) {
+        //echo $query;
         mysql_query($query,$this->descriptor);
     }
 
@@ -56,28 +53,6 @@ class MySQL extends Database {
     function escape($string) {
         return mysql_real_escape_string(htmlspecialchars($string), $this->descriptor);
     }
-
-    /**
-     * Insert_Id
-     *
-     * Функция вставляет id последней вставленной записи
-     *
-     * @return int Id записи
-     */
-     function insert_id() {
-         return mysql_insert_id($this->descriptor);
-     }
-
-     /**
-      * Insert_Id_sql
-      *
-      * Функция вставляет id последней вставленной записи (SQL-версия)
-      *
-      * @return int Id записи
-      */
-      function insert_id_sql() {
-          return $this->fetchOne("SELECT LAST_INSERT_ID()");
-      }
 
     /**
      * fetchAll
@@ -162,6 +137,10 @@ class MySQL extends Database {
      function fetchObject($query) {
         $result=mysql_query($query,$this->descriptor);
         return @mysql_fetch_object($result); //FIXME: доделать
+     }
+
+     function insert_id() {
+        return @mysql_insert_id($this->descriptor);
      }
 
 }
