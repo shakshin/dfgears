@@ -88,14 +88,6 @@ class DFCore {
             closedir($coreDir);
         }
 
-
-        require_once "Module.class.php";
-        require_once "Templater.class.php";
-        require_once "Database.class.php";
-        require_once "Context.class.php";
-        require_once "Auth.class.php";
-        require_once "Mail.class.php";
-        require_once "Image.class.php";
     }
 
     private function dbInit() {
