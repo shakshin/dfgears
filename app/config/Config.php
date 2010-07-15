@@ -6,4 +6,9 @@
     $cfg->database->dbPassword = "dfgears";
 
     $cfg->defaultObject = "test";
+    $cfg->defaultTitle = "DFGears page title";
+
+    $cfg->publcURL = "http://dfgears";
+
+    $cfg->mailFrom = "postmaster@dfgears";
 ?>
