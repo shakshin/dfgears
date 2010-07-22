@@ -70,6 +70,7 @@ class DFCore {
 
     private $hooks = array();
     private $isAjax = false;
+    private $isAdmin = false;
 
     private function init() {
         error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
@@ -97,8 +98,8 @@ class DFCore {
     }
 
     private function parse() {
-        // чтение параметров
-        // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
+    // чтение параметров
+    // сначала _GET, затем _POST - последние накладываются поверх и более приоритетны
         $ctx = new DFContext();
         $ctx = $this->hookTouch("before_params_load", $ctx);
 
@@ -120,9 +121,17 @@ class DFCore {
         $uri = preg_replace("/\.html$/", "", $uri);
         $parsed = explode("/", $uri);
 
-        // Проверка на aякс-флаг
-        if (!empty($parsed[0]) && $parsed[0] == "ajax") {
-            $this->setAjax();
+        // Проверка на флаги
+        $flags= array("ajax", "admin");
+        while (!empty($parsed[0]) && in_array($parsed[0], $flags)) {
+            switch ($parsed[0]) {
+                case "admin":
+                    $this->setAdmin();
+                    break;
+                case "ajax":
+                    $this->setAjax();
+                    break;
+            }
             $parsed = array_slice($parsed, 1);
         }
 
@@ -156,7 +165,7 @@ class DFCore {
         // Подключение gears
         if ($gearsDir = opendir("app/modules/gears")) {
             while (false != ($gear = readdir($gearsDir))) {
-                if ((preg_match("/^[^_].+\.php$/", $gear) > 0) && (!is_dir("modules/gears" . $gear))) {
+                if ((preg_match("/^[^_].+\.php$/", $gear) > 0) && (!is_dir("app/modules/gears" . $gear))) {
                     include_once "app/modules/gears/" . $gear;
                 }
             }
@@ -166,11 +175,11 @@ class DFCore {
         $this->configure();
         $this->pageTitle = $this->config->defaultTitle;
 
-        // Инициализация адаптера БД       
-         if (!$this->dbInit()) {
-             $this->doError("database connection failed");
-             return;
-         }
+        // Инициализация адаптера БД
+        if (!$this->dbInit()) {
+            $this->doError("database connection failed");
+            return;
+        }
 
         // Подключение системы авторизации
         $this->auth = new DFAuth($this);
@@ -178,14 +187,40 @@ class DFCore {
         $this->parse();
 
         // подключения модуля и генерация контента
-        if (isset($this->request->parameters["alias"])) {
-            $alias = $this->request->parameters["alias"];
+        if  ($this->isAdmin) {
+            if (isset($this->request->parameters["alias"])) {
+                $alias = $this->request->parameters["alias"];
+            } else {
+                $alias = "admin-main";
+                $this->request->parameters["alias"] = "admin-main";
+            }
+            $adminMenu = array();
+            if ($modDir = opendir("app/modules")) {
+                while (false != ($mod = readdir($modDir))) {
+                    if ((preg_match("/^.+\.admin\.php$/", $mod) > 0) && (!is_dir("app/modules/" . $mod))) {
+                        require_once "app/modules/" . $mod;
+                        preg_replace("/\.admin\.php$/", "", $mod);
+                        $modAlias = array_search($mod, $this->aliases);
+                        $mod .= "Admin";
+                        $instance = new $mod;
+                        $modTitle = $instance->title;
+                        $adminMenu[] = array($modTitle, $modAlias);
+                    }
+                }
+            }
+            $this->setTemplateVar("adminMenu", $adminMenu);
+            $this->setMainTemplate("admin");
+            $this->content = $this->adminAction($this->aliases[$alias], $this->request->parameters["action"]);
         } else {
-            $alias = $this->config->defaultObject;
-            $this->request->parameters["alias"] = $this->config->defaultObject;
+            if (isset($this->request->parameters["alias"])) {
+                $alias = $this->request->parameters["alias"];
+            } else {
+                $alias = $this->config->defaultObject;
+                $this->request->parameters["alias"] = $this->config->defaultObject;
+            }
+
+            $this->content = $this->moduleAction($this->aliases[$alias], $this->request->parameters["action"]);
         }
-        
-        $this->content = $this->moduleAction($this->aliases[$alias], $this->request->parameters["action"]);
 
         if (!$this->isAjax) {
             $tpl = new DFTemplater();
@@ -203,6 +238,10 @@ class DFCore {
 
     public function setAjax() {
         $this->isAjax = true;
+    }
+
+    public function setAdmin() {
+        $this->isAdmin = true;
     }
 
     public function addIncludePath($path) {
@@ -248,7 +287,7 @@ class DFCore {
         return $newContext;
     }
 
-    private function moduleAction($module, $action) {
+    public function moduleAction($module, $action) {
         if (empty($module)) {
             $this->doError("module undefined: {$module}");
         }
@@ -261,13 +300,26 @@ class DFCore {
 
     }
 
+    public function adminAction($module, $action) {
+        if (empty($module)) {
+            $this->doError("module undefined: {$module}");
+        }
+        if (!file_exists("app/modules/" . $module . ".admin.php")) {
+            $this->doError("module not found: {$module}");
+        }
+        require_once "app/modules/" . $module . ".admin.php";
+        $moduleInstance = new $module($this);
+        return $moduleInstance->action($action);
+
+    }
+
     /**
      *
      * @param string $to Адресат
      * @param string $subj Тема
      * @param string $message Тело письма
      */
-    public function sendMail($to, $subj, $message) {      
+    public function sendMail($to, $subj, $message) {
         $m = new Mail();
         $m->From($this->config->mailFrom);
         $m->To($to);

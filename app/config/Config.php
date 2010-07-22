@@ -1,4 +1,5 @@
 <?php
+    
     $cfg->database->system = "MySQL";
     $cfg->database->dbHost = "localhost";
     $cfg->database->dbName = "dfgears";

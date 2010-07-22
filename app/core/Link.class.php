@@ -5,6 +5,7 @@
         private $ext = False;
         private $parameters = array();
         private $options = array();
+        private $flags = array();
         private $hr = True;
 
         public function __construct() {
@@ -32,6 +33,10 @@
             $this->options[] = $name;
         }
 
+        public function flag($name) {
+            $this->flags[] = $name;
+        }
+
         public function classic() {
             $this->hr = False;
         }
@@ -50,6 +55,10 @@
             }
 
             if ($this->hr) {
+                foreach ($this->flags as $flag) {
+                    $flag = urlencode($flag);
+                    $url .= "{$flag}/";
+                }
                 $url .= "{$alias}/{$action}";
                 foreach ($this->parameters as $name => $value) {
                     $name = urlencode($name);
