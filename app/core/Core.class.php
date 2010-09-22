@@ -113,12 +113,16 @@ class DFCore {
         $ctx->vars["parameters"] = $this->request->parameters;
         $ctx = $this->hookTouch("after_prarams_load", $ctx);
         $this->request->parameters = $ctx->vars["parameters"];
-
+        
         // ЧПУ
+        //if (!empty($_GET) || !empty($_POST)) { return;};
+        
+        
         $uri = $_SERVER["REQUEST_URI"];
         $uri = preg_replace("/^\//", "", $uri);
         $uri = preg_replace("/\?.*$/", "", $uri);
         $uri = preg_replace("/\.html$/", "", $uri);
+        $uri = preg_replace("/index\.php/", "", $uri);
         $parsed = explode("/", $uri);
 
         // Проверка на флаги
@@ -218,7 +222,10 @@ class DFCore {
                 $alias = $this->config->defaultObject;
                 $this->request->parameters["alias"] = $this->config->defaultObject;
             }
+            if (empty($this->aliases[$alias])) {
+                $this->doError(" undefined alias: {$alias}");
 
+            }
             $this->content = $this->moduleAction($this->aliases[$alias], $this->request->parameters["action"]);
         }
 
