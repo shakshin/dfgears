@@ -14,7 +14,7 @@
  *
  */
 class DFCore {
-    public $version = "0.1a";
+    public $version = "0.2";
     /**
      *
      * Объект, отвечающий за авторизацию пользователей в системе
@@ -94,7 +94,8 @@ class DFCore {
     private function dbInit() {
         require_once "Database.".$this->config->database->system.".class.php";
         $this->database = new $this->config->database->system($this->config->database);
-        return $this->database->connect();
+        //return $this->database->connect();
+        return True;
     }
 
     private function parse() {

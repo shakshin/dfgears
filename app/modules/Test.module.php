@@ -1,14 +1,24 @@
 <?php
-class test extends DFModule {
+class Test extends DFModule {
+
+    public function dbtest() {
+        $users = $this->core->database->fetchAll("
+            SELECT * FROM users ORDER BY id
+        ");
+        $tpl = new DFTemplater();
+        $tpl->assign("users", $users);
+        $tpl->setPrefix("test");
+        return $tpl->fetch("dbtest");
+    }
 
     public function main() {
-        $link = new DFLink();
-        $link->external("http://test.bla");
-        $link->option("byRating");
-        $link->param("test", "kkjhkjhkjh!!!???");
-        $link->classic();
-        $url = $link->render();
-        ?><a href="<?=$url ?>">test</a><?
+        $methods = get_class_methods($this);
+        unset($methods[array_search("action", $methods)]);
+        unset($methods[array_search("DFModule", $methods)]);
+
+        $tpl = new DFTemplater();
+        $tpl->assign("tests", $methods);
+        return $tpl->fetch("test");
     }
 }
 

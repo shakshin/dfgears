@@ -165,9 +165,8 @@ class Auth extends DFModule {
             $password = md5($this->core->request->parameters["password"]);
             $fullName = $this->core->database->escape($this->core->request->parameters["fullName"]);
             $email = $this->core->database->escape($this->core->request->parameters["email"]);
-            $icq = $this->core->database->escape($this->core->request->parameters["icq"]);
 
-            $this->core->database->exec("update users set `password` = '{$password}', fullName = '{$fullName}', icq= '{$icq}', email = '{$email}' where id = {$id}");
+            $this->core->database->exec("update users set `password` = '{$password}', fullName = '{$fullName}', email = '{$email}' where id = {$id}");
 
             return "<p class='b-centered'>Ваша учетная запись успешно изменена.</p>";
         } else {
@@ -179,7 +178,6 @@ class Auth extends DFModule {
             $tpl->assign("id", $_SESSION["userId"]);
             $tpl->assign("fullName", $pr["fullName"]);
             $tpl->assign("email", $pr["email"]);
-            $tpl->assign("icq", $pr["icq"]);
             $tpl->setPrefix("auth");
             return $tpl->fetch("profile");
         }

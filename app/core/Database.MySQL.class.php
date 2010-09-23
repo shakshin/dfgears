@@ -20,6 +20,10 @@ class MySQL extends Database {
 	public $dbUser;
 	public $dbPassword;
 
+        function connected() {
+            return !empty($this->descriptor);
+        }
+
     /**
      * Подключение к базе данных
      */
@@ -39,6 +43,11 @@ class MySQL extends Database {
      */
     function exec($query) {
         //echo $query;
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         mysql_query($query,$this->descriptor);
     }
 
@@ -51,6 +60,12 @@ class MySQL extends Database {
      * @return string Экранированная строка
      */
     function escape($string) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+
+                return False;
+            }
+        }
         return mysql_real_escape_string(htmlspecialchars($string), $this->descriptor);
     }
 
@@ -65,6 +80,12 @@ class MySQL extends Database {
      * @return array массив с результатом запроса
      */
     function fetchAll($query) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                
+                return False;
+            }
+        }
         //echo $query;
         $result=array();
 		//счетчик
@@ -87,6 +108,11 @@ class MySQL extends Database {
      * @return array ассоциативный массив с результатом запроса
      */
     function fetchRow($query) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         $result=mysql_query($query,$this->descriptor);
         return mysql_fetch_assoc($result);
     }
@@ -101,6 +127,11 @@ class MySQL extends Database {
      * TODO: реализовать
      */
     function fetchCol($query) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         $result=mysql_query($query,$this->descriptor);
         $resultCol = array();
         while ($line = mysql_fetch_array($result)) {
@@ -120,6 +151,11 @@ class MySQL extends Database {
      * TODO: реализовать
      */
     function fetchOne($query) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         //echo $query;
         $result=mysql_query($query,$this->descriptor);
         $resultRow =  mysql_fetch_array($result);
@@ -135,11 +171,21 @@ class MySQL extends Database {
      * @return object результат запроса в виде объекта
      */
      function fetchObject($query) {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         $result=mysql_query($query,$this->descriptor);
         return @mysql_fetch_object($result); //FIXME: доделать
      }
 
      function insert_id() {
+        if (!$this->connected()) {
+            if (!$this->connect()) {
+                return False;
+            }
+        }
         return @mysql_insert_id($this->descriptor);
      }
 
