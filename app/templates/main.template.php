@@ -24,6 +24,6 @@
             <hr/>
             <?=$content ?>
             <hr/>
-            <address>dfgears engine v<?=$this->version ?> &copy; <a href="http://diffy.ru">Different</a>; original code by <a href="mailto:shakshin@diffy.ru">Sergei Shakshin</a></address>
+            <address>dfgears engine v<?=$this->cor->version ?> &copy; <a href="http://diffy.ru">Different</a>; original code by <a href="mailto:shakshin@diffy.ru">Sergei Shakshin</a></address>
         </body>
 </html>

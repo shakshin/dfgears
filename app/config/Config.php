@@ -7,7 +7,7 @@
     $cfg->database->dbPassword = "dfgears";
 
     $cfg->defaultObject = "test";
-    $cfg->defaultTitle = "DFGears page title";
+    $cfg->defaultTitle = "DFGears demo site";
 
     $cfg->publicURL = "http://dfgears";
 

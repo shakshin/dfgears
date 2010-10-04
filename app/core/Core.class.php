@@ -190,7 +190,7 @@ class DFCore {
         $this->auth = new DFAuth($this);
 
         $this->parse();
-
+        
         // подключения модуля и генерация контента
         if  ($this->isAdmin) {
             if (isset($this->request->parameters["alias"])) {
@@ -204,15 +204,15 @@ class DFCore {
                 while (false != ($mod = readdir($modDir))) {
                     if ((preg_match("/^.+\.admin\.php$/", $mod) > 0) && (!is_dir("app/modules/" . $mod))) {
                         require_once "app/modules/" . $mod;
-                        preg_replace("/\.admin\.php$/", "", $mod);
+                        $mod = preg_replace("/\.admin\.php$/", "", $mod);
                         $modAlias = array_search($mod, $this->aliases);
-                        $mod .= "Admin";
                         $instance = new $mod;
                         $modTitle = $instance->title;
-                        $adminMenu[] = array($modTitle, $modAlias);
+                        if ($modTitle != null) {$adminMenu[] = array($modTitle, $modAlias);};
                     }
                 }
             }
+            
             $this->setTemplateVar("adminMenu", $adminMenu);
             $this->setMainTemplate("admin");
             $this->content = $this->adminAction($this->aliases[$alias], $this->request->parameters["action"]);
