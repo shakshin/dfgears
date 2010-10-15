@@ -80,6 +80,7 @@ class MySQL extends Database {
      * @return array массив с результатом запроса
      */
     function fetchAll($query) {
+        
         if (!$this->connected()) {
             if (!$this->connect()) {
                 

@@ -3,35 +3,56 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+                <link rel="stylesheet" type="text/css" href="/css/admin.css" media="screen"/>
+                <link rel="stylesheet" type="text/css" href="/css/superfish.css" media="screen"/>
+                <link rel="stylesheet" type="text/css" href="/css/superfish-navbar.css" media="screen"/>
+                <script type="text/javascript" src="/js/jquery-1.2.6.min.js"></script>
+                <script type="text/javascript" src="/js/hoverIntent.js"></script>
+                <script type="text/javascript" src="/js/superfish.js"></script>
+                
+
 		<title>DFGears administrator console</title>
 	</head>
 	<body>
-            <div align="right">
-                <a href="/">/</a>
-                <?
-                if ($this->core->auth->check()) {
-                ?>
-                    <a href="/user/profile"><?=$_SESSION["userName"] ?></a>
-                    <a href="/user/logoff">Выход</a>
-                <?
-                } else {
-                ?>
-                    <a href="/user/logon">Вход</a>
-                <?
-                }
-                ?>
-            </div>
-            <hr/>
+            <div>
+            <ul id="menu" class="sf-menu sf-navbar">
 <?
     foreach ($adminMenu as $menuItem) {
 ?>
-            <a href="/admin/<?=$menuItem[1]?>"><?=$menuItem[0]?></a>&nbsp;
+                <li><a href="#"><?=$menuItem["title"]?></a>
+                    <?
+                    if (!empty($menuItem["menu"])) {
+                    ?>
+                    <ul>
+                    <?
+                        $alias = $menuItem["alias"];
+                        foreach ($menuItem["menu"] as $key => $value) {
+                    ?>
+                        <li><a href="/admin/<?=$alias ?>/<?=$value ?>"><?=$key ?></a></li>
+                    <?
+                        }
+                    ?>
+                    </ul>
+                    <?
+                    }
+                    ?>
+                </li>
 <?
     }
 ?>
-            <hr/>
+            </ul>
+            </div>
+             <script type="text/javascript">
+
+                // initialise plugins
+                jQuery(function(){
+                        jQuery('ul.sf-menu').superfish();
+                });
+
+                </script>
+            <div id="container">
+            <div id="content">
             <?=$content ?>
-            <hr/>
-            <address>dfgears engine v<?=$this->cor->version ?> &copy; <a href="http://diffy.ru">Different</a>; original code by <a href="mailto:shakshin@diffy.ru">Sergei Shakshin</a></address>
+            </div></div>
         </body>
 </html>

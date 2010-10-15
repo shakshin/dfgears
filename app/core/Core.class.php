@@ -203,12 +203,14 @@ class DFCore {
             if ($modDir = opendir("app/modules")) {
                 while (false != ($mod = readdir($modDir))) {
                     if ((preg_match("/^.+\.admin\.php$/", $mod) > 0) && (!is_dir("app/modules/" . $mod))) {
+                        
                         require_once "app/modules/" . $mod;
                         $mod = preg_replace("/\.admin\.php$/", "", $mod);
                         $modAlias = array_search($mod, $this->aliases);
                         $instance = new $mod;
+                        $modMenu = $instance->menu;
                         $modTitle = $instance->title;
-                        if ($modTitle != null) {$adminMenu[] = array($modTitle, $modAlias);};
+                        if ($modTitle != null) {$adminMenu[] = array("title" => $modTitle, "alias" => $modAlias, "menu" => $modMenu);};
                     }
                 }
             }
