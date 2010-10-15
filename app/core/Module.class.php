@@ -12,7 +12,12 @@ abstract class DFModule {
 
     public function action($action) {
         if (($this->roleRequired != null) && (!$this->core->auth->checkRole($this->roleRequired))) {
-            $this->core->doError("У Вас нет доступа к этой странице<br/>You are not alowed to access this content", "HTTP/1.0 403 Forbidden");
+            if ($this->core->auth->check()) {
+                $this->core->doError("У Вас нет доступа к этой странице<br/>You are not alowed to access this content", "HTTP/1.0 403 Forbidden");
+            } else {
+                $_SESSION["lastURI"] = $uri = $_SERVER["REQUEST_URI"];
+                header("Location: /user/logon");
+            }
         }
         if (empty($action)) { $action = "main"; }
         if (method_exists($this, $action)) {

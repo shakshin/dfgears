@@ -19,7 +19,11 @@ class Auth extends DFModule {
             if (!empty($uid)) {
                 $_SESSION["userId"] = $uid;
                 $_SESSION["userName"] = $login;
-                header("Location: /");
+                if (!empty($_SESSION["lastURI"])) {
+                    header("Location: {$_SESSION["lastURI"]}");
+                } else {
+                    header("Location: /");
+                }
                 return;
             } else {
                  $tpl = new DFTemplater();
