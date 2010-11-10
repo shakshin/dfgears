@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Окт 16 2010 г., 14:14
+-- Время создания: Ноя 10 2010 г., 18:40
 -- Версия сервера: 5.1.49
 -- Версия PHP: 5.3.2-2
 
@@ -59,6 +59,29 @@ CREATE TABLE IF NOT EXISTS `roles` (
 
 INSERT INTO `roles` (`id`, `alias`, `fullName`) VALUES
 (3, 'admin', 'SiteAdmin');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `text`
+--
+
+CREATE TABLE IF NOT EXISTS `text` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `alias` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `title` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `text` text COLLATE utf8_unicode_ci NOT NULL,
+  `author` int(10) unsigned NOT NULL,
+  `dt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `alias` (`alias`),
+  KEY `title` (`title`,`author`,`dt`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=11 ;
+
+--
+-- Дамп данных таблицы `text`
+--
+
 
 -- --------------------------------------------------------
 

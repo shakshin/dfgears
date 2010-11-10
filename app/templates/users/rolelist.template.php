@@ -1,5 +1,5 @@
 <h2>
-					Список пользователей
+					Список ролей
 </h2>
 
 
@@ -15,13 +15,10 @@
 										id
                 </th>
                 <th>
-										login
+										Алиас
                 </th>
                 <th>
-										Полное имя/ник
-                </th>
-                <th>
-										Email
+										Низвание
                 </th>
                 <th>
                     Действия
@@ -29,26 +26,23 @@
             </tr>
         </thead>
         <tbody>
-            <? foreach ($users as $user) {
+            <? foreach ($roles as $role) {
  ?>
                 <tr>
                     <td>
-<?= $user["id"] ?>
+<?= $role["id"] ?>
                 </td>
                 <td>
-<?= $user["login"] ?>
+<?= $role["alias"] ?>
                 </td>
                 <td>
-<?= $user["fullName"] ?>
-                </td>
-                <td>
-                    <a href="mailto:<?= $user["email"] ?>"><?= $user["email"] ?></a>
+<?= $role["fullName"] ?>
                 </td>
                 <td>
 
                     <div class="b-actions l">
                         <div href="" class="b-button l">
-                            <a href="/admin/users/deleteUser/id/<?=$user["id"] ?>">
+                            <a href="/admin/users/deleteRole/id/<?=$role["id"] ?>">
                                 <span>Удалить</span>
                             </a>
                         </div>
@@ -57,21 +51,9 @@
 
                         <div class="c"></div>
                     </div>
-
                     <div class="b-actions l">
                         <div href="" class="b-button l">
-                            <a href="/admin/users/activateUser/id/<?=$user["id"] ?>">
-                                <span>Активировать</span>
-                            </a>
-                        </div>
-
-                        <hr class="l" />
-
-                        <div class="c"></div>
-                    </div>
-                    <div class="b-actions l">
-                        <div href="" class="b-button l">
-                            <a href="/admin/users/updUser/id/<?=$user["id"] ?>">
+                            <a href="/admin/users/updRole/id/<?=$role["id"] ?>">
                                 <span>Редактировать</span>
                             </a>
                         </div>
@@ -88,7 +70,7 @@
 
 
   <div href="" class="b-button l">
-     <a href="/admin/users/addUser/">
+     <a href="/admin/users/addRole/">
        <span>Добавить</span>
      </a>
   </div>

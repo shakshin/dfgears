@@ -1,6 +1,6 @@
-<h2>
-					Список пользователей
-</h2>
+<h1>
+					Список текстов
+</h1>
 
 
 
@@ -12,16 +12,16 @@
         <thead>
             <tr>
                 <th>
-										id
+										Имя
                 </th>
                 <th>
-										login
+										Заголовок
                 </th>
                 <th>
-										Полное имя/ник
+										Автор
                 </th>
                 <th>
-										Email
+										Последняя правка
                 </th>
                 <th>
                     Действия
@@ -29,26 +29,26 @@
             </tr>
         </thead>
         <tbody>
-            <? foreach ($users as $user) {
+            <? foreach ($texts as $text) {
  ?>
                 <tr>
                     <td>
-<?= $user["id"] ?>
+<?=$text["alias"] ?>
                 </td>
                 <td>
-<?= $user["login"] ?>
+<?=$text["title"] ?>
                 </td>
                 <td>
-<?= $user["fullName"] ?>
+<?=$text["author"] ?>
                 </td>
                 <td>
-                    <a href="mailto:<?= $user["email"] ?>"><?= $user["email"] ?></a>
+<?=$text["dt"] ?>
                 </td>
                 <td>
 
                     <div class="b-actions l">
                         <div href="" class="b-button l">
-                            <a href="/admin/users/deleteUser/id/<?=$user["id"] ?>">
+                            <a href="/admin/text/delete/id/<?=$text["id"] ?>">
                                 <span>Удалить</span>
                             </a>
                         </div>
@@ -60,19 +60,8 @@
 
                     <div class="b-actions l">
                         <div href="" class="b-button l">
-                            <a href="/admin/users/activateUser/id/<?=$user["id"] ?>">
-                                <span>Активировать</span>
-                            </a>
-                        </div>
-
-                        <hr class="l" />
-
-                        <div class="c"></div>
-                    </div>
-                    <div class="b-actions l">
-                        <div href="" class="b-button l">
-                            <a href="/admin/users/updUser/id/<?=$user["id"] ?>">
-                                <span>Редактировать</span>
+                            <a href="/admin/text/edit/id/<?=$text["id"] ?>">
+                                <span>Править</span>
                             </a>
                         </div>
 
@@ -86,12 +75,6 @@
         </tbody>
     </table>
 
-
-  <div href="" class="b-button l">
-     <a href="/admin/users/addUser/">
-       <span>Добавить</span>
-     </a>
-  </div>
-  <div class="c"></div>
+  
 
 </div>
